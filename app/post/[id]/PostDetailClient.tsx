@@ -36,7 +36,7 @@ export default function PostDetailClient() {
         router.push('/not-found');
         return;
       }
-      if (!res.ok) throw new Error('Database belum tersedia di deployment Vercel.');
+      if (!res.ok) throw new Error('Gagal memuat post.');
 
       const data = await res.json();
       setPost(data.post);

@@ -25,19 +25,29 @@ export default function PostDetailClient() {
   const [title, setTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const loadPost = useCallback(async () => {
-    const res = await fetch(`/api/posts/${id}`);
-    if (res.status === 404) {
-      router.push('/not-found');
-      return;
-    }
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/posts/${id}`, { cache: 'no-store' });
+      if (res.status === 404) {
+        router.push('/not-found');
+        return;
+      }
+      if (!res.ok) throw new Error('Database belum tersedia di deployment Vercel.');
 
-    const data = await res.json();
-    setPost(data.post);
+      const data = await res.json();
+      setPost(data.post);
     setTitle(data.post.title);
-    setPostContent(data.post.content);
-    setComments(data.comments);
+      setPostContent(data.post.content);
+      setComments(data.comments);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : 'Gagal memuat post.');
+    } finally {
+      setLoading(false);
+    }
   }, [id, router]);
 
   useEffect(() => {
@@ -92,7 +102,8 @@ export default function PostDetailClient() {
     if (res.ok) router.push('/');
   };
 
-  if (!post) return <p className="container mt-4">Loading...</p>;
+  if (loading) return <p className="container mt-4">Loading...</p>;
+  if (!post) return <main className="container mt-4"><p className="text-danger">{error || 'Post tidak ditemukan.'}</p></main>;
 
   return (
     <main className="container mt-4">

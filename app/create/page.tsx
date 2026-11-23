@@ -5,15 +5,21 @@ import { useRouter } from 'next/navigation';
 export default function CreatePost() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [error, setError] = useState('');
   const router = useRouter();
  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('/api/posts', {
+    const res = await fetch('/api/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, content }),
     });
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? 'Failed to create post');
+      return;
+    }
     router.push('/');
   };
  
@@ -40,6 +46,7 @@ export default function CreatePost() {
             required
           />
         </div>
+        {error && <p className="text-danger">{error}</p>}
         <button className="btn btn-success">Save</button>
       </form>
     </main>

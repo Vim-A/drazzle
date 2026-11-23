@@ -1,14 +1,12 @@
 import Link from 'next/link';
- 
-async function getPosts() {
-  const res = await fetch('http://localhost:3000/api/posts', {
-    cache: 'no-store',
-  });
-  return res.json();
-}
+import { db } from '@/db';
+import { posts as postsTable } from '@/db/schema';
+import { desc } from 'drizzle-orm';
+
+export const instant = false;
  
 export default async function Home() {
-  const posts = await getPosts();
+  const posts = await db.select().from(postsTable).orderBy(desc(postsTable.createdAt));
  
   return (
     <main className="container mt-4">

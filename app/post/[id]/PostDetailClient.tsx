@@ -36,7 +36,7 @@ export default function PostDetailClient() {
         router.push('/not-found');
         return;
       }
-      if (!res.ok) throw new Error('Gagal memuat post.');
+      if (!res.ok) throw new Error('JANGAN DI INTIP');
 
       const data = await res.json();
       setPost(data.post);
@@ -44,7 +44,7 @@ export default function PostDetailClient() {
       setPostContent(data.post.content);
       setComments(data.comments);
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : 'Gagal memuat post.');
+      setError(loadError instanceof Error ? loadError.message : 'JANGAN DI INTIP ');
     } finally {
       setLoading(false);
     }
